@@ -8,32 +8,15 @@ export default class Form extends React.Component {
             userName: '',
             cardNumber: '',
             cardLimit: '',
-            cardList: [
-                { id: 1, userName: 'firstuser', balance: 100, cardLimit: 10000, cardNumber: "1111222233334444" },
-                { id: 2, userName: 'seconduser', balance: 200, cardLimit: 20300, cardNumber: "222222222222222" }
-            ]
+            cardList: []
         };
     }
 
-    renderCardData() {
-        return this.state.cardList.map((card, index) => {
-            const { id, userName, balance, cardLimit, cardNumber } = card //destructuring
-            return (
-                <tr key={id}>
-                    <td>{userName}</td>
-                    <td>{cardNumber}</td>
-                    <td><span>&#163;</span>{balance}</td>
-                    <td><span>&#163;</span>{cardLimit}</td>
-                </tr>
-            )
-        })
-    }
+    componentDidMount() {
+        this.fetchCardList();
+    } 
 
-    onChange = (e) => {
-        this.setState({ [e.target.name]: e.target.value });
-    }
-
-    fetchCardList() {
+    fetchCardList = () => {
         axios({
             method: 'GET',
             url: 'http://localhost:8080/card',
@@ -46,20 +29,44 @@ export default class Form extends React.Component {
             }
         }).then(response => {
             this.setState({
-                cardList: response.data
+                cardList: response.data,
+                userName: '',
+                cardNumber: '',
+                cardLimit: ''
             })
         })
     }
 
-    handleSubmit(event) {
+    renderCardData(cardList) {
+        return cardList.map((card) => {
+            const { id, userName, cardLimit, balance, cardNumber } = card;
+            return (
+                <tr key={id}>
+                    <td>{userName}</td>
+                    <td>{cardNumber}</td>
+                    <td><span>&#163;</span>{balance}</td>
+                    <td><span>&#163;</span>{cardLimit}</td>
+                </tr>
+            )
+        })
+    }
+
+    onChange = (e) => {
+        let { target:{name, value} } = e; 
+        if(name !== 'userName')
+            value = value.replace(/[^0-9]/g, ''); 
+        this.setState({ [name]: value });
+    }
+
+    addCard = (event) => {
         event.preventDefault();
         const data = new FormData(event.target);
+        const fetchCall = this.fetchCardList;
         var postData = {};
-
         for (var entry of data.entries()) {
             postData[entry[0]] = entry[1];
         }
-        postData = JSON.stringify(postData)
+        postData = JSON.stringify(postData); 
 
         axios({
             method: 'POST',
@@ -69,55 +76,63 @@ export default class Form extends React.Component {
             data: postData,
             headers: {
                 'Content-Type': 'application/json',
-                //'Accept': 'application/json',
+                'Accept': 'application/json',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Credentials': true
             }
         }).then(function (response) {
             alert(response.data);
+            fetchCall();
         }).catch((error, response) => {
-            if ((error.response.status == 409) || (error.response.status == 400)) {
+            if ((error.response.status === 409) || (error.response.status === 400)) {
                 alert(error.response.data);
             }
         })
-
-    }
-
-    componentDidMount() {
-        this.fetchCardList();
+        return false;
     }
 
     render() {
+        const { userName, cardNumber, cardLimit, cardList} = this.state;
         return (
-            <div style={{ "width": '80%', "align": 'center' }}>
-                <form onSubmit={this.handleSubmit} style={{ "align": 'left', "width": '80%' }}>
-                    <h1>Credit Card System</h1> <br />
-                    <h2>Add</h2> <br />
-                    <label>Name</label>
-                    <br /> <input type="text" name="userName" value={this.state.userName} onChange={this.onChange} /> <br /> <br />
-                    <label>Card number</label>
-                    <br /> <input type="text" name="cardNumber" value={this.state.cardNumber} onChange={this.onChange} /> <br /> <br />
-                    <label>Limit</label>
-                    <br /> <input type="text" name="cardLimit" value={this.state.cardLimit} onChange={this.onChange} /> <br /> <br />
+            <>
+                <h1 align="left">Credit Card System</h1> 
+                <h2 align="left">Add</h2> 
+                <form onSubmit={ (e) => this.addCard(e) }>
+                    <label htmlFor="userName">Name</label>
+                    <input type="text" name="userName" value={userName} onChange={this.onChange} size="50"/> <br /> <br />
+                    
+                    <label htmlFor="cardNumber">Card number</label> 
+                    <input type="text" name="cardNumber" value={cardNumber} onChange={this.onChange} size="50" maxLength="19"/> <br /> <br />
+                    
+                    <label htmlFor="cardLimit">Limit</label>
+                    <input type="text" name="cardLimit" value={cardLimit} onChange={this.onChange} size="50"/> <br /> <br />
 
-                    <input type="submit" value="Add" style={{ 'background-color': '#cccccc' }} />
+                    <input type="submit" value="Add" />
                 </form>
                 <br /> <br />
-                <div style={{ "width": '80%', "align": 'center' }}>
-                    <h2 id='title' align="left">Existing Cards</h2>
-                    <table id='carddetail' width='100%' align='center' border="1">
-                        <tbody>
-                            <tr bgcolor='#cccccc'>
-                                <th width="25%">Name</th>
-                                <th width="25%">Card Number</th>
-                                <th width="25%">Balance</th>
-                                <th width="25%">Limit</th>
-                            </tr>
-                            {this.renderCardData()}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                
+                <h2 id='title' align="left">Existing Cards</h2>
+                {
+                    cardList.length === 0 ?
+                    (
+                        <p>No existing cards</p>
+                    )
+                    :
+                    (
+                        <table id='carddetail' width='100%' border="1">
+                            <tbody>
+                                <tr bgcolor='#ccc'>
+                                    <th width="20%">Name</th>
+                                    <th width="40%">Card Number</th>
+                                    <th width="20%">Balance</th>
+                                    <th width="20%">Limit</th>
+                                </tr>
+                                {this.renderCardData(cardList)}
+                            </tbody>
+                        </table> 
+                    )
+                } 
+            </>
         );
     }
 }
