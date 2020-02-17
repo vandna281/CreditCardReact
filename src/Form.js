@@ -56,9 +56,6 @@ export default class Form extends React.Component {
         const data = new FormData(event.target);
         var postData = {};
 
-        this.setState({ errors, [name]: value }, () => {
-            console.log(errors)
-        })
         for (var entry of data.entries()) {
             postData[entry[0]] = entry[1];
         }
@@ -83,27 +80,11 @@ export default class Form extends React.Component {
                 alert(error.response.data);
             }
         })
-        this.fetchCardList();
 
     }
 
     componentDidMount() {
         this.fetchCardList();
-        /*axios({
-            method: 'GET',
-            url: 'http://localhost:8080/card',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': true,
-                'Accept': 'application/json'
-            }
-        }).then(response => {
-            this.setState({
-                cardList: response.data
-            })
-        })*/
     }
 
     render() {
