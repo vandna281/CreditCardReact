@@ -86,6 +86,8 @@ export default class Form extends React.Component {
         }).catch((error, response) => {
             if ((error.response.status === 409) || (error.response.status === 400)) {
                 alert(error.response.data);
+            } else {
+                alert("UnexpectedError!");
             }
         })
         return false;
