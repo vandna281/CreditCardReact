@@ -22,8 +22,8 @@ export default class Form extends React.Component {
                 <tr key={id}>
                     <td>{userName}</td>
                     <td>{cardNumber}</td>
-                    <td>{balance}</td>
-                    <td>{cardLimit}</td>
+                    <td><span>&#163;</span>{balance}</td>
+                    <td><span>&#163;</span>{cardLimit}</td>
                 </tr>
             )
         })
@@ -89,29 +89,29 @@ export default class Form extends React.Component {
 
     render() {
         return (
-            <div>
-                <form onSubmit={this.handleSubmit}>
-                    <h1>Credit Card System</h1> <br /> <br />
+            <div style={{ "width": '80%', "align": 'center' }}>
+                <form onSubmit={this.handleSubmit} style={{ "align": 'left', "width": '80%' }}>
+                    <h1>Credit Card System</h1> <br />
                     <h2>Add</h2> <br />
-                    Name
-                <br /> <input type="text" name="userName" value={this.state.userName} onChange={this.onChange} /> <br /> <br />
-                    Card Number
-                <br /> <input type="text" name="cardNumber" value={this.state.cardNumber} onChange={this.onChange} /> <br /> <br />
-                    Limit
-                <br /> <input type="text" name="cardLimit" value={this.state.cardLimit} onChange={this.onChange} /> <br /> <br />
+                    <label>Name</label>
+                    <br /> <input type="text" name="userName" value={this.state.userName} onChange={this.onChange} /> <br /> <br />
+                    <label>Card number</label>
+                    <br /> <input type="text" name="cardNumber" value={this.state.cardNumber} onChange={this.onChange} /> <br /> <br />
+                    <label>Limit</label>
+                    <br /> <input type="text" name="cardLimit" value={this.state.cardLimit} onChange={this.onChange} /> <br /> <br />
 
-                    <input type="submit" value="Add" />
+                    <input type="submit" value="Add" style={{ 'background-color': '#cccccc' }} />
                 </form>
-                <br />
-                <div>
-                    <h2 id='title'>Existing Cards</h2>
-                    <table id='carddetail'>
+                <br /> <br />
+                <div style={{ "width": '80%', "align": 'center' }}>
+                    <h2 id='title' align="left">Existing Cards</h2>
+                    <table id='carddetail' width='100%' align='center' border="1">
                         <tbody>
-                            <tr>
-                                <th>Name</th>
-                                <th>Card Number</th>
-                                <th>Balance</th>
-                                <th>Limit</th>
+                            <tr bgcolor='#cccccc'>
+                                <th width="25%">Name</th>
+                                <th width="25%">Card Number</th>
+                                <th width="25%">Balance</th>
+                                <th width="25%">Limit</th>
                             </tr>
                             {this.renderCardData()}
                         </tbody>
