@@ -61,7 +61,6 @@ export default class Form extends React.Component {
     addCard = (event) => {
         event.preventDefault();
         const data = new FormData(event.target);
-        const fetchCall = this.fetchCardList;
         var postData = {};
         for (var entry of data.entries()) {
             postData[entry[0]] = entry[1];
@@ -72,7 +71,6 @@ export default class Form extends React.Component {
             method: 'POST',
             url: 'http://localhost:8080/card/add',
             mode: 'no-cors',
-            //crossDomain: true,
             data: postData,
             headers: {
                 'Content-Type': 'application/json',
@@ -80,9 +78,9 @@ export default class Form extends React.Component {
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Credentials': true
             }
-        }).then(function (response) {
+        }).then((response) => {
             alert(response.data);
-            fetchCall();
+            this.fetchCardList();
         }).catch((error, response) => {
             if ((error.response.status === 409) || (error.response.status === 400)) {
                 alert(error.response.data);
